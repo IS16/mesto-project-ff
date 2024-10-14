@@ -1,7 +1,7 @@
 import '../pages/index.css';
 import { initialCards } from './cards.js';
-import { likeCard, deleteCard, renderCardsList } from './card.js';
-import { openPopup, closePopup, closePopupOnOverlay } from './popup.js';
+import { createCard, likeCard, deleteCard } from './card.js';
+import { openModal, closeModal } from './modal.js';
 
 // DOM узлы
 const placesList = document.querySelector('.places__list');
@@ -23,31 +23,28 @@ const imagePopup = document.querySelector('.popup_type_image');
 const imagePopup_caption = imagePopup.querySelector('.popup__caption');
 const imagePopup_image = imagePopup.querySelector('.popup__image');
 
+// Функция добавления карточек в контейнер
+const renderCardsList = (container, card, likeCard, deleteCard, openImagePopup, append = true) => {
+    const newCard = createCard(card, deleteCard, likeCard, openImagePopup);
+    append ? container.append(newCard) : container.prepend(newCard);
+};
+
 // Функция заполнения и открытия модального окна с изображением
-const openImagePopup = (title = '', link = '', alt = '') => {
+const openImageModal = (title, link, alt) => {
     imagePopup_caption.textContent = title;
     imagePopup_image.src = link;
     imagePopup_image.alt = alt;
-    openPopup(imagePopup);
-};
-
-// Функция заполнения формы модального окна данными
-const fillProfilePopupForm = (form, name = '', description = '') => {
-    form.elements.name.value = name;
-    form.elements.description.value = description;
-};
-
-// Функция заполнения данных профиля
-const fillProfileInfo = (name = '', description = '') => {
-    profileTitle.textContent = name;
-    profileDescription.textContent = description;
+    openModal(imagePopup);
 };
 
 // Функция-обработчик формы изменения данных профиля
 const handleProfileEditFormSubmit = (evt) => {
     evt.preventDefault();
-    fillProfileInfo(profileEditForm.elements.name.value, profileEditForm.elements.description.value);
-    closePopup(profileEditPopup);
+
+    profileTitle.textContent = profileEditForm.elements.name.value;
+    profileDescription.textContent = profileEditForm.elements.description.value;
+
+    closeModal(profileEditPopup);
 };
 
 // Функция-обработчик формы добавления новой карточки
@@ -59,23 +56,28 @@ const handleProfileAddFormSubmit = (evt) => {
         link: profileAddForm.elements.link.value
     };
 
-    renderCardsList(placesList, card, likeCard, deleteCard, openImagePopup, false);
-    closePopup(profileAddPopup);
+    renderCardsList(placesList, card, likeCard, deleteCard, openImageModal, false);
+    closeModal(profileAddPopup);
 };
+
+// Добавление событий закрытия всех существующих модальных окон
+const popups = document.querySelectorAll('.popup');
+popups.forEach((popup) => {
+    const closeButton = popup.querySelector('.popup__close');
+    closeButton.addEventListener('click', () => closeModal(popup));
+    popup.addEventListener('mousedown', (evt) => {
+        if (evt.target === evt.currentTarget) {
+            closeModal(popup);
+        }
+    });
+});
 
 // Слушатель события клика на кнопку редактирования профиля
 profileEditButton.addEventListener('click', () => {
-    fillProfilePopupForm(
-        profileEditForm,
-        profileTitle.textContent,
-        profileDescription.textContent
-    );
-    openPopup(profileEditPopup);
-});
+    profileEditForm.elements.name.value = profileTitle.textContent;
+    profileEditForm.elements.description.value = profileDescription.textContent;
 
-// Слушатель события клика на фон модального окна редактирования профиля
-profileEditPopup.addEventListener('click', (evt) => {
-    closePopupOnOverlay(evt);
+    openModal(profileEditPopup);
 });
 
 // Слушатель события отправки формы модального окна редактирования профиля
@@ -84,30 +86,11 @@ profileEditForm.addEventListener('submit', handleProfileEditFormSubmit);
 // Слушатель события клика на кнопку добавления новой карточки
 profileAddButton.addEventListener('click', () => {
     profileAddForm.reset();
-    openPopup(profileAddPopup);
-});
-
-// Слушатель события клика на фон модального окна добавления новой карточки
-profileAddPopup.addEventListener('click', (evt) => {
-    closePopupOnOverlay(evt);
+    openModal(profileAddPopup);
 });
 
 // Слушатель события отправки формы модального окна добавления новой карточки
 profileAddForm.addEventListener('submit', handleProfileAddFormSubmit);
 
-// Слушатель события клика на фон модального окна с изображением
-imagePopup.addEventListener('click', (evt) => {
-    closePopupOnOverlay(evt);
-});
-
-// Слушатель события нажатия на кнопку закрытия модального окна
-document.addEventListener('click', (evt) => {
-    if (evt.target.classList.contains('popup__close')) {
-        closePopup(evt.target.parentNode.parentNode);
-    }
-});
-
 // Вывести карточки на страницу
-initialCards.forEach(card => {
-    renderCardsList(placesList, card, likeCard, deleteCard, openImagePopup);
-});
+initialCards.forEach(card => renderCardsList(placesList, card, likeCard, deleteCard, openImageModal));
