@@ -1,0 +1,8 @@
+.profile__image-container {
+    cursor: pointer;
+}
+
+.profile__image-container:hover .profile__image-overlay {
+    visibility: initial;
+    opacity: 1;
+}
