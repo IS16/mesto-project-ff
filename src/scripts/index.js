@@ -1,8 +1,8 @@
 import '../pages/index.css';
-import { createCard, likeCard, deleteCardInit as deleteCard, confirmDeleteCard } from './card.js';
+import { createCard, likeCard } from './card.js';
 import { openModal, closeModal } from './modal.js';
 import { enableValidation, clearValidation } from './validation.js';
-import { getInitialInfo, updateProfile, addCard, updateProfileAvatar } from './api.js';
+import { getInitialInfo, updateProfile, addCard, deleteCard, updateProfileAvatar } from './api.js';
 
 // DOM узлы
 const placesList = document.querySelector('.places__list');
@@ -21,8 +21,9 @@ const profileAddButton = document.querySelector('.profile__add-button');
 const profileAddPopup = document.querySelector('.popup_type_new-card');
 const profileAddForm = document.forms['new-place'];
 
-const confirmPopup = document.querySelector('.popup_type_confirm');
-const confirmPopupButton = confirmPopup.querySelector('.popup__button');
+// Элементы модального окна подтвежрдения удаления карточки
+const popupConfirm = document.querySelector('.popup_type_confirm');
+const popupConfirmButton = popupConfirm.querySelector('.popup__button');
 
 // Элементы модального окна с изображением
 const imagePopup = document.querySelector('.popup_type_image');
@@ -121,7 +122,7 @@ const handleProfileAddFormSubmit = (evt) => {
         link: profileAddForm.elements.link.value
     })
         .then((createdCard) => {
-            renderCardsList(placesList, createdCard, likeCard, deleteCard, openImageModal, false);
+            renderCardsList(placesList, createdCard, likeCard, deleteCardInit, openImageModal, false);
             closeModal(profileAddPopup);
         })
         .catch((err) => console.log(err))
@@ -144,6 +145,29 @@ const handleAvatarUpdateFormSubmit = (evt) => {
         })
         .catch((err) => console.log(err))
         .finally(() => renderLoading(false, submitButton, 'save'));
+};
+
+// Функция вызова модального окна подтверждения удаления карточки
+const deleteCardInit = (elem) => {
+    const cardId = elem.dataset.cardId;
+    openModal(popupConfirm);
+    popupConfirm.dataset.cardId = cardId;
+};
+
+// Функция удаления карточки
+const confirmDeleteCard = (elem) => {
+    const cardId = elem.dataset.cardId;
+    const buttonElement = elem.querySelector('.popup__button');
+    renderLoading(true, buttonElement, 'delete');
+    
+    deleteCard(cardId)
+        .then((res) => {
+            const card = document.querySelector(`[data-card-id="${cardId}"]`);
+            card.remove();
+            closeModal(popupConfirm);
+        })
+        .catch((err) => console.log(err))
+        .finally(() => renderLoading(false, buttonElement, 'delete'));
 };
 
 // Добавление событий закрытия всех существующих модальных окон
@@ -182,7 +206,7 @@ profileAddButton.addEventListener('click', () => {
 profileAddForm.addEventListener('submit', handleProfileAddFormSubmit);
 
 // Слушатель события подтвеждения удаления карточки
-confirmPopupButton.addEventListener('click', (evt) => confirmDeleteCard(evt.target.closest('.popup'), renderLoading));
+popupConfirmButton.addEventListener('click', (evt) => confirmDeleteCard(evt.target.closest('.popup'), renderLoading));
 
 // Слушатель события открытия формы обновления аватара пользователя
 profileImageContainer.addEventListener('click', () => {
@@ -202,7 +226,7 @@ getInitialInfo()
         fillProfile(userInfo);
 
         const initialCards = res[1];
-        initialCards.forEach(card => renderCardsList(placesList, card, likeCard, deleteCard, openImageModal));
+        initialCards.forEach(card => renderCardsList(placesList, card, likeCard, deleteCardInit, openImageModal));
     })
     .catch((err) => console.log(err));
 

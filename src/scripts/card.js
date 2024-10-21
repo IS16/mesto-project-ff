@@ -1,32 +1,7 @@
-import { openModal,closeModal } from './modal.js';
 import { deleteCard, addLike, removeLike } from './api.js';
 
 // Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
-const popupConfirm = document.querySelector('.popup_type_confirm');
-
-// Функция вызова модального окна подтверждения удаления карточки
-const deleteCardInit = (elem) => {
-    const cardId = elem.dataset.cardId;
-    openModal(popupConfirm);
-    popupConfirm.dataset.cardId = cardId;
-};
-
-// Функция удаления карточки
-const confirmDeleteCard = (elem, renderLoading) => {
-    const cardId = elem.dataset.cardId;
-    const buttonElement = elem.querySelector('.popup__button');
-    renderLoading(true, buttonElement, 'delete');
-    
-    deleteCard(cardId)
-        .then((res) => {
-            const card = document.querySelector(`[data-card-id="${cardId}"]`);
-            card.remove();
-            closeModal(popupConfirm);
-        })
-        .catch((err) => console.log(err))
-        .finally(() => renderLoading(false, buttonElement, 'delete'));
-};
 
 // Функция добавления лайка карточки
 const likeCard = (elem) => {
@@ -53,7 +28,7 @@ const likeCard = (elem) => {
 };
 
 // Функция создания карточки
-const createCard = (userId, card, deleteCardCallback = deleteCard, likeCardCallback = likeCard, openImagePopupCallback) => {
+const createCard = (userId, card, deleteCardCallback, likeCardCallback = likeCard, openImagePopupCallback) => {
     const cardElement = cardTemplate.querySelector('.card').cloneNode(true);
 
     cardElement.dataset.cardId = card._id;
@@ -86,4 +61,4 @@ const createCard = (userId, card, deleteCardCallback = deleteCard, likeCardCallb
     return cardElement;
 };
 
-export { createCard, likeCard, deleteCardInit, confirmDeleteCard };
+export { createCard, likeCard };
