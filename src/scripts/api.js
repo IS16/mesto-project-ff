@@ -12,53 +12,53 @@ const getResponseData = (res) => {
 };
 
 // Запрос данных пользователя
-const getUserInfo = async () => {
+const getUserInfo = () => {
     return fetch(`${config.baseUrl}/users/me`, {method: 'GET', headers: config.headers})
         .then((res) => getResponseData(res));
 };
 
 // Получение карточек
-const getCards = async () => {
+const getCards = () => {
     return fetch(`${config.baseUrl}/cards`, {method: 'GET', headers: config.headers})
         .then((res) => getResponseData(res));
 };
 
-const getInitialInfo = async () => {
+const getInitialInfo = () => {
     return Promise.all([getUserInfo(), getCards()]);
 };
 
 // Обновление пользователя
-const updateProfile = async (userInfo) => {
+const updateProfile = (userInfo) => {
     return fetch(`${config.baseUrl}/users/me`, {method: 'PATCH', headers: config.headers, body: JSON.stringify(userInfo)})
         .then((res) => getResponseData(res));
 };
 
 // Обновление аватара пользователя
-const updateProfileAvatar = async (avatarInfo) => {
+const updateProfileAvatar = (avatarInfo) => {
     return fetch(`${config.baseUrl}/users/me/avatar`, {method: 'PATCH', headers: config.headers, body: JSON.stringify(avatarInfo)})
         .then((res) => getResponseData(res));
 };
 
 // Добавление новой карточки
-const addCard = async (cardInfo) => {
+const addCard = (cardInfo) => {
     return fetch(`${config.baseUrl}/cards`, {method: 'POST', headers: config.headers, body: JSON.stringify(cardInfo)})
         .then((res) => getResponseData(res));
 };
 
 // Удаление карточки
-const deleteCard = async (cardId) => {
+const deleteCard = (cardId) => {
     return fetch(`${config.baseUrl}/cards/${cardId}`, {method: 'DELETE', headers: config.headers})
         .then((res) => getResponseData(res));
 };
 
 // Добавление лайка карточке
-const addLike = async (cardId) => {
+const addLike = (cardId) => {
     return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {method: 'PUT', headers: config.headers})
         .then((res) => getResponseData(res));
 };
 
 // Удаление лайка у карточки
-const removeLike = async (cardId) => {
+const removeLike = (cardId) => {
     return fetch(`${config.baseUrl}/cards/likes/${cardId}`, {method: 'DELETE', headers: config.headers})
         .then((res) => getResponseData(res));
 };
