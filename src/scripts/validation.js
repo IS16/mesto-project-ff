@@ -67,12 +67,15 @@ const setEventListeners = (formElement, inputSelector, submitButtonSelector, ina
 
 // Проверка фалидности формы
 const hasInvalidInput = (inputList) => {
+    console.log(inputList);
     return inputList.some((inputElement) => !inputElement.validity.valid);
 };
 
 // Смена состояния кнопки в зависимости от валидности формы
 const toggleButtonState = (inputList, buttonElement, inactiveButtonClass) => {
+    console.log(buttonElement);
     if (hasInvalidInput(inputList)) {
+        console.log('dsds');
         buttonElement.classList.add(inactiveButtonClass);
         buttonElement.disabled = true;
     } else {
@@ -85,7 +88,7 @@ const toggleButtonState = (inputList, buttonElement, inactiveButtonClass) => {
 const clearValidation = (formElement, validationConfig) => {
     const inputList = Array.from(formElement.querySelectorAll(validationConfig.inputSelector));
     const buttonElement = formElement.querySelector(validationConfig.submitButtonSelector);
-    buttonElement.classList.add(validationConfig.inactiveButtonClass);
+    buttonElement.classList.remove(validationConfig.inactiveButtonClass);
 
     inputList.forEach((inputElement) => {
         hideInputError(formElement, inputElement, validationConfig.inputErrorClass, validationConfig.errorClass);
