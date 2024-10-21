@@ -1,15 +1,10 @@
-import { deleteCard, addLike, removeLike } from './api.js';
+import { addLike, removeLike } from './api.js';
 
 // Темплейт карточки
 const cardTemplate = document.querySelector('#card-template').content;
 
 // Функция добавления лайка карточки
-const likeCard = (elem) => {
-    const cardId = elem.dataset.cardId;
-    const cardElement = document.querySelector(`[data-card-id="${cardId}"]`);
-    const cardLikeCount = cardElement.querySelector('.card__like-count');
-    const cardLikeButton = cardElement.querySelector('.card__like-button');
-
+const likeCard = (cardId, cardLikeButton, cardLikeCount) => {
     if (cardLikeButton.classList.contains('card__like-button_is-active')) {
         removeLike(cardId)
             .then((res) => {
@@ -53,7 +48,7 @@ const createCard = (userId, card, deleteCardCallback, likeCardCallback = likeCar
         cardDeleteButton.remove();
     }
 
-    cardLikeButton.addEventListener('click', (evt) => likeCardCallback(evt.target.closest('.card')));
+    cardLikeButton.addEventListener('click', (evt) => likeCardCallback(card._id, cardLikeButton, cardLikeCount));
     cardImage.addEventListener('click', () => {
         openImagePopupCallback(card.name, card.link, card.name);
     });
