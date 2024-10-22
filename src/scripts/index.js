@@ -67,12 +67,8 @@ const renderLoading = (isLoading, buttonElement, operation) => {
     };
 
     if (isLoading) {
-        buttonElement.classList.add(validationConfig.inactiveButtonClass);
-        buttonElement.disabled = true;
         buttonElement.textContent = states[operation].progress;
     } else {
-        buttonElement.classList.remove(validationConfig.inactiveButtonClass);
-        buttonElement.disabled = false;
         buttonElement.textContent = states[operation].done;
     }
 };
